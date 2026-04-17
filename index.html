@@ -18,7 +18,7 @@
             padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; width: 100%; box-sizing: border-box; outline: none; text-align: right;
         }
 
-        .flex-split { display: flex; gap: 10px; }
+        .flex-split { display: flex; gap: 10px; width: 100%; }
         .flex-split .row { flex: 1; }
 
         .option-group { background: #f1f2f6; padding: 15px; border-radius: 8px; margin: 15px 0; border-right: 4px solid var(--accent); }
@@ -26,7 +26,7 @@
         
         .gps-box { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 8px; margin: 15px 0; }
         .gps-inputs { display: flex; gap: 10px; margin-top: 10px; }
-        .gps-inputs input { text-align: center; background: white; border: 1px solid #3498db; }
+        .gps-inputs input { text-align: center; background: white; border: 1px solid #3498db; direction: ltr; }
         
         .checklist { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
         .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
@@ -70,11 +70,11 @@
         <div class="flex-split">
             <div class="row">
                 <label><span class="num">8א.</span> מספר SIM:</label>
-                <input type="text">
+                <input type="text" id="sim_num">
             </div>
             <div class="row">
                 <label><span class="num">8ב.</span> רשת SIM:</label>
-                <input type="text">
+                <input type="text" id="sim_net">
             </div>
         </div>
 
@@ -88,7 +88,7 @@
                 <label><input type="radio" name="xr_config" value="PIU"> PIU</label>
                 <label><input type="radio" name="xr_config" value="ממסר"> ממסר</label>
                 <div style="margin-right: 15px; flex-grow: 1;">
-                    <input type="text" placeholder="הזן מספר">
+                    <input type="text" id="xr_num" placeholder="הזן מספר">
                 </div>
             </div>
         </div>
@@ -110,15 +110,16 @@
         <div class="gps-box">
             <div style="text-align: center;">
                 <button type="button" class="btn btn-gps" onclick="handleGPS()">📍 דגום מיקום GPS אוטומטי</button>
+                <div id="gps-status" style="font-size:0.75rem; color:#666; margin-top:5px;">ניתן להזין ידנית</div>
             </div>
             <div class="gps-inputs">
                 <div style="flex:1">
                     <label style="font-size:0.75rem; display:block;">קו רוחב (Lat)</label>
-                    <input type="text" id="lat_val" placeholder="32.123456">
+                    <input type="text" id="lat_val" placeholder="32.xxxx">
                 </div>
                 <div style="flex:1">
                     <label style="font-size:0.75rem; display:block;">קו אורך (Lng)</label>
-                    <input type="text" id="lng_val" placeholder="34.123456">
+                    <input type="text" id="lng_val" placeholder="34.xxxx">
                 </div>
             </div>
         </div>
@@ -126,7 +127,7 @@
         <div class="checklist">
             <label style="font-weight:bold; color:var(--primary); text-decoration:underline;">צ'ק ליסט סיום התקנה:</label>
             <div class="checklist-item"><input type="checkbox"> <span>נרשמו פרטים על המדבקה (שם, תאריך, תדר)</span></div>
-            <div class="row" style="padding: 10px 0; margin-right: 32px;">
+            <div class="row" style="padding: 10px 0; margin-right: 32px; width: auto;">
                 <label>איכות תקשורת (RSSI / CSQ):</label>
                 <input type="text" placeholder="הזן עוצמת קליטה">
             </div>
@@ -152,40 +153,71 @@
 
         <div class="btn-group">
             <button type="button" class="btn btn-print" onclick="preparePrint()">הדפס / שמור כ-PDF</button>
-            <button type="reset" class="btn btn-reset" onclick="location.reload()">איפוס</button>
+            <button type="button" class="btn btn-reset" onclick="resetForm()">איפוס טופס</button>
         </div>
     </form>
 </div>
 
 <script>
-    // הגדרת תאריך נוכחי בפורמט אירופאי DD/MM/YYYY
-    const today = new Date();
-    const dateInput = document.getElementById('install_date');
-    dateInput.valueAsDate = today;
+    // אתחול תאריך
+    document.getElementById('install_date').valueAsDate = new Date();
 
     function handleGPS() {
         const latInput = document.getElementById('lat_val');
         const lngInput = document.getElementById('lng_val');
-        if (!navigator.geolocation) return;
+        const status = document.getElementById('gps-status');
+        
+        status.innerText = "מאתר מיקום...";
+        
+        if (!navigator.geolocation) {
+            status.innerText = "אין תמיכה ב-GPS";
+            return;
+        }
+
         navigator.geolocation.getCurrentPosition((pos) => {
             latInput.value = pos.coords.latitude.toFixed(6);
             lngInput.value = pos.coords.longitude.toFixed(6);
-        }, null, { enableHighAccuracy: true });
+            status.innerText = "מיקום עודכן בהצלחה";
+            status.style.color = "#27ae60";
+        }, (err) => {
+            status.innerText = "שגיאה ב-GPS";
+            status.style.color = "red";
+        }, { enableHighAccuracy: true });
+    }
+
+    function resetForm() {
+        if(confirm("האם אתה בטוח שברצונך לנקות את כל הטופס?")) {
+            // איפוס הטופס הסטנדרטי
+            document.getElementById('installForm').reset();
+            
+            // איפוס ידני של שדות ה-GPS
+            document.getElementById('lat_val').value = "";
+            document.getElementById('lng_val').value = "";
+            
+            // איפוס הסטטוס
+            const status = document.getElementById('gps-status');
+            status.innerText = "ניתן להזין ידנית";
+            status.style.color = "#666";
+            
+            // החזרת התאריך להיום
+            document.getElementById('install_date').valueAsDate = new Date();
+            
+            // גלילה לראש הדף
+            window.scrollTo(0, 0);
+        }
     }
 
     function preparePrint() {
-        // הפיכת התאריך לטקסט קבוע בפורמט אירופאי לפני ההדפסה
+        const dateInput = document.getElementById('install_date');
         const val = dateInput.value;
         if(val) {
             const parts = val.split('-');
             if(parts.length === 3) {
-                // שינוי תצוגה זמנית לצורך הדפסה
                 dateInput.type = 'text';
                 dateInput.value = `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
         }
         window.print();
-        // החזרה למצב קלט תאריך לאחר ההדפסה
         setTimeout(() => {
             dateInput.type = 'date';
             dateInput.value = val;

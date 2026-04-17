@@ -22,7 +22,7 @@
         .flex-split .row { flex: 1; }
 
         .option-group { background: #f1f2f6; padding: 15px; border-radius: 8px; margin: 15px 0; border-right: 4px solid var(--accent); }
-        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; }
+        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
         
         .gps-box { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
         #gps-display-print { display: none; font-size: 1.1rem; font-weight: bold; color: #000; margin-top: 10px; border: 1px dashed #3498db; padding: 10px; }
@@ -67,21 +67,32 @@
         <div class="row"><label><span class="num">6.</span> מספר הפעלות כולל ראשי:</label><input type="number"></div>
         <div class="row"><label><span class="num">7.</span> מספר מוטורולה (870):</label><input type="text"></div>
         
-        <!-- פיצול SIM ורשת -->
         <div class="flex-split">
             <div class="row">
                 <label><span class="num">8א.</span> מספר SIM:</label>
-                <input type="text" placeholder="הזן מספר כרטיס">
+                <input type="text">
             </div>
             <div class="row">
                 <label><span class="num">8ב.</span> רשת SIM:</label>
-                <input type="text" placeholder="סלקום/פרטנר/הוט">
+                <input type="text">
             </div>
         </div>
 
         <div class="row"><label><span class="num">9.</span> מס' IP (במערכת FIU):</label><input type="text"></div>
         <div class="row"><label><span class="num">10.</span> תדר רדיו שנצרב:</label><input type="text"></div>
         <div class="row"><label><span class="num">11.</span> מס' עמוד חשמל / מרכזייה:</label><input type="text"></div>
+
+        <!-- חדש: תצורת XR -->
+        <div class="option-group">
+            <label><b>תצורת XR:</b></label>
+            <div class="flex-row">
+                <label><input type="radio" name="xr_config" value="PIU"> PIU</label>
+                <label><input type="radio" name="xr_config" value="ממסר"> ממסר</label>
+                <div style="margin-right: 15px; flex-grow: 1;">
+                    <input type="text" placeholder="הזן מספר" style="padding: 8px;">
+                </div>
+            </div>
+        </div>
 
         <div class="option-group">
             <label><b>סוג תקשורת:</b></label>
@@ -103,7 +114,6 @@
             <div id="gps-display-print">מיקום (Lat, Lng): טרם נדגם</div>
         </div>
 
-        <!-- צ'קליסט מלא -->
         <div class="checklist">
             <label style="font-weight:bold; color:var(--primary); text-decoration:underline;">צ'ק ליסט סיום התקנה:</label>
             <div class="checklist-item"><input type="checkbox"> <span>נרשמו פרטים על המדבקה (שם, תאריך, תדר)</span></div>

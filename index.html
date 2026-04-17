@@ -3,115 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>טופס התקנה אקווה</title>
+    <title>טופס התקנה - אקווה</title>
     <style>
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f8f9fa; }
         body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; direction: rtl; }
-        .container { max-width: 600px; background: white; padding: 20px; margin: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); font-size: 1.4rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        .row { display: flex; flex-direction: column; margin-bottom: 15px; }
-        .row label { font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        input[type="text"], input[type="number"], input[type="date"] { 
-            padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; width: 100%; box-sizing: border-box; 
+        .container { max-width: 650px; background: white; padding: 20px; margin: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--primary); font-size: 1.4rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-top: 0; }
+        .instruction { text-align: center; color: red; font-weight: bold; font-size: 0.85rem; margin-bottom: 20px; }
+        
+        .row { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .row label { font-weight: bold; margin-bottom: 4px; font-size: 0.9rem; color: var(--primary); }
+        .row span { font-size: 0.8rem; color: #666; margin-left: 5px; }
+
+        input[type="text"], input[type="number"], input[type="date"], select { 
+            padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; width: 100%; box-sizing: border-box; outline: none;
         }
-        .option-group { background: #f1f2f6; padding: 15px; border-radius: 8px; margin: 15px 0; display: flex; flex-wrap: wrap; gap: 15px; }
+
+        .option-group { background: #f1f2f6; padding: 15px; border-radius: 8px; margin: 15px 0; border-right: 4px solid var(--accent); }
+        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; }
+        
         .gps-box { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .btn-gps { background: #27ae60; color: white; }
-        .btn-print { background: var(--primary); color: white; margin-top: 20px; }
-        .hidden-gps-inputs { display: none; margin-top: 10px; gap: 10px; }
-        @media print { .btn, .gps-box { display: none; } .container { box-shadow: none; width: 100%; } }
+        
+        .checklist { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
+        .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
+        .checklist-item input { width: 22px; height: 22px; flex-shrink: 0; }
+        .checklist-item span { font-size: 0.95rem; }
+
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+        .btn-gps { background: #27ae60; color: white; margin-bottom: 10px; }
+        .btn-print { background: var(--primary); color: white; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+
+        @media print {
+            .btn, .gps-box, .instruction { display: none; }
+            body { padding: 0; background: white; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; }
+            input { border: none !important; border-bottom: 1px solid #000 !important; border-radius: 0; }
+            .option-group { background: white; border: 1px solid #000; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>טופס התקנה - אקווה</h1>
+    <p class="instruction">! נא למלא בכתב ברור - חובה למלא את כל הפרטים !</p>
     
     <div class="row">
-        <label>מספר קריאה</label>
-        <input type="text" id="call_id">
+        <label>מספר קריאה:</label>
+        <input type="text" id="call_id" placeholder="הזן מספר קריאה">
     </div>
 
-    <div class="row"><label>1. לקוח מזמין</label><input type="text"></div>
-    <div class="row"><label>2. לקוח סופי</label><input type="text"></div>
-    <div class="row"><label>4. ID של היחידה</label><input type="text"></div>
-    <div class="row"><label>5. שם הגן / כתובת</label><input type="text"></div>
+    <!-- שדות הטבלה המקוריים -->
+    <div class="row"><label><span>1.</span> לקוח מזמין:</label><input type="text"></div>
+    <div class="row"><label><span>2.</span> לקוח סופי:</label><input type="text"></div>
+    <div class="row"><label><span>3.</span> סוג המוצר:</label><input type="text"></div>
+    <div class="row"><label><span>4.</span> ID של היחידה:</label><input type="text"></div>
+    <div class="row"><label><span>5.</span> שם הגן / מיקום / כתובת:</label><input type="text"></div>
+    <div class="row"><label><span>6.</span> מספר הפעלות כולל ראשי:</label><input type="number"></div>
+    <div class="row"><label><span>7.</span> מספר מוטורולה (870):</label><input type="text"></div>
+    <div class="row"><label><span>8.</span> מספר SIM + רשת:</label><input type="text" placeholder="למשל: סלקום / פרטנר"></div>
+    <div class="row"><label><span>9.</span> מס' IP (במערכת FIU):</label><input type="text"></div>
+    <div class="row"><label><span>10.</span> תדר רדיו שנצרב:</label><input type="text"></div>
+    <div class="row"><label><span>11.</span> מס' עמוד חשמל / מרכזייה:</label><input type="text"></div>
 
+    <!-- סוג תקשורת ומתח -->
     <div class="option-group">
-        <label style="width:100%">תקשורת ומתח:</label>
-        <label><input type="radio" name="comm"> רדיו</label>
-        <label><input type="radio" name="comm"> סלולר</label>
-        <label><input type="radio" name="pwr"> פאנל</label>
-        <label><input type="radio" name="pwr"> חשמל</label>
-    </div>
-
-    <div class="gps-box">
-        <button type="button" class="btn btn-gps" onclick="handleGPS()">📍 דגום מיקום (GPS)</button>
-        <div id="gps-status" style="margin-top:10px; font-size:0.9rem;">לחץ לדגימה</div>
-        
-        <!-- שדות גיבוי שיופיעו אם ה-GPS נכשל -->
-        <div id="manual-gps" class="hidden-gps-inputs">
-            <input type="text" id="lat_manual" placeholder="קו רוחב (Latitude)">
-            <input type="text" id="lng_manual" placeholder="קו אורך (Longitude)">
+        <label><b>סוג תקשורת:</b></label>
+        <div class="flex-row">
+            <label><input type="radio" name="comm" value="רדיו"> רדיו</label>
+            <label><input type="radio" name="comm" value="סלולר"> סלולר</label>
+        </div>
+        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ccc;">
+        <label><b>מקור מתח:</b></label>
+        <div class="flex-row">
+            <label><input type="radio" name="power" value="פאנל סולארי"> פאנל סולארי</label>
+            <label><input type="radio" name="power" value="חשמל 220V"> חשמל 220V</label>
         </div>
     </div>
 
-    <div class="row">
-        <label>שם המתקין</label>
-        <input type="text">
-    </div>
-    <div class="row">
-        <label>תאריך</label>
-        <input type="date" id="curr_date">
+    <!-- GPS -->
+    <div class="gps-box">
+        <button type="button" class="btn btn-gps" onclick="handleGPS()">📍 דגום מיקום GPS נוכחי</button>
+        <div id="gps-status" style="font-size:0.9rem; font-weight:bold;">טרם נדגם מיקום</div>
+        <div id="manual-gps" style="display:none; margin-top:10px;">
+            <input type="text" id="lat_val" placeholder="קו רוחב (Latitude)" style="margin-bottom:5px;">
+            <input type="text" id="lng_val" placeholder="קו אורך (Longitude)">
+        </div>
     </div>
 
-    <button type="button" class="btn btn-print" onclick="window.print()">סיום והדפסה</button>
+    <!-- צ'קליסט סיום התקנה -->
+    <div class="checklist">
+        <label style="font-weight:bold; color:var(--primary); text-decoration:underline;">צ'ק ליסט סיום התקנה:</label>
+        
+        <div class="checklist-item">
+            <input type="checkbox"> <span>נרשמו פרטים על המדבקה (שם, תאריך, תדר)</span>
+        </div>
+        
+        <div class="row" style="padding: 10px 0; margin-right: 32px;">
+            <label>איכות תקשורת (RSSI / CSQ):</label>
+            <input type="text" placeholder="הזן עוצמת קליטה">
+        </div>
+
+        <div class="checklist-item">
+            <input type="checkbox"> <span>נבדקו יציאות בקר (סולנואידים, מגענים)</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span>נבדקו כניסות בקר (מונה, ריליי)</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span>בוצעה אינטגרציה מלאה + בדיקה מרחוק</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span>הועלו תמונות לאפליקציית שירות שטח</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span>איטום בסיליקון (חורים, גב הארון)</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span>הכנסת קואורדינטות ל-ICCPRO</span>
+        </div>
+        <div class="checklist-item">
+            <input type="checkbox"> <span>הדרכת גולש לקבלן (אם נדרש)</span>
+        </div>
+    </div>
+
+    <!-- חתימה ותאריך -->
+    <div style="margin-top: 25px; border-top: 2px solid var(--primary); padding-top: 15px;">
+        <div class="row">
+            <label>שם המתקין:</label>
+            <input type="text" id="installer">
+        </div>
+        <div class="row">
+            <label>תאריך התקנה:</label>
+            <input type="date" id="install_date">
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-print" onclick="window.print()">הדפס ושמור כ-PDF</button>
 </div>
 
 <script>
-    // תאריך אוטומטי
-    document.getElementById('curr_date').valueAsDate = new Date();
+    // תאריך ברירת מחדל
+    document.getElementById('install_date').valueAsDate = new Date();
 
     function handleGPS() {
         const status = document.getElementById('gps-status');
-        const manualFields = document.getElementById('manual-gps');
-        
-        status.innerText = "מנסה לאתר מיקום... (ממתין לדיוק)";
-        status.style.color = "blue";
+        const manual = document.getElementById('manual-gps');
+        status.innerText = "מתחבר ללוויין... (אנא המתן 2 שניות לדיוק)";
+        status.style.color = "#3498db";
 
         if (!navigator.geolocation) {
-            showManual("הדפדפן לא תומך ב-GPS. הזן ידנית:");
+            status.innerText = "הדפדפן לא תומך ב-GPS";
             return;
         }
 
-        const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const lat = pos.coords.latitude.toFixed(6);
-                const lng = pos.coords.longitude.toFixed(6);
-                status.innerHTML = `✅ מיקום נקלט:<br>${lat}, ${lng}`;
-                status.style.color = "#27ae60";
-                manualFields.style.display = "none";
-            },
-            (err) => {
-                let msg = "";
-                if (err.code === 1) msg = "אין הרשאה ל-GPS (חסום).";
-                else if (err.code === 3) msg = "זמן המתנה הסתיים.";
-                else msg = "לא ניתן לקלוט מיקום.";
-                
-                showManual(msg + " הזן קואורדינטות ידנית:");
-            },
-            options
-        );
-    }
-
-    function showManual(msg) {
-        document.getElementById('gps-status').innerText = msg;
-        document.getElementById('gps-status').style.color = "red";
-        document.getElementById('manual-gps').style.display = "flex";
-        document.getElementById('manual-gps').style.flexDirection = "column";
+        setTimeout(() => {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude.toFixed(6);
+                    const lng = pos.coords.longitude.toFixed(6);
+                    const acc = pos.coords.accuracy.toFixed(1);
+                    status.innerHTML = `✅ מיקום נדגם בהצלחה!<br>LAT: ${lat} | LNG: ${lng}<br><small>דיוק: ${acc} מטרים</small>`;
+                    status.style.color = "#27ae60";
+                    manual.style.display = "block";
+                    document.getElementById('lat_val').value = lat;
+                    document.getElementById('lng_val').value = lng;
+                },
+                (err) => {
+                    status.innerText = "שגיאה בדגימת מיקום. הזן ידנית:";
+                    status.style.color = "red";
+                    manual.style.display = "block";
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }, 2000);
     }
 </script>
 

@@ -24,8 +24,10 @@
         .option-group { background: #f1f2f6; padding: 15px; border-radius: 8px; margin: 15px 0; border-right: 4px solid var(--accent); }
         .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
         
-        .gps-box { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
-        #gps-display-print { display: none; font-size: 1.1rem; font-weight: bold; color: #000; margin-top: 10px; border: 1px dashed #3498db; padding: 10px; }
+        /* GPS Box */
+        .gps-box { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .gps-inputs { display: flex; gap: 10px; margin-top: 10px; }
+        .gps-inputs input { text-align: center; background: white; border: 1px solid #3498db; }
         
         .checklist { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
         .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
@@ -33,7 +35,7 @@
 
         .btn-group { display: flex; gap: 10px; margin-top: 25px; }
         .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        .btn-gps { background: #27ae60; color: white; margin-bottom: 10px; }
+        .btn-gps { background: #27ae60; color: white; margin-bottom: 5px; }
         .btn-print { background: var(--primary); color: white; flex: 3; }
         .btn-reset { background: #95a5a6; color: white; flex: 1; }
 
@@ -43,8 +45,8 @@
             .container { box-shadow: none; width: 100%; max-width: 100%; margin: 0; }
             input { border: none !important; border-bottom: 1px solid #000 !important; border-radius: 0; padding: 5px 0; }
             .option-group { background: white; border: 1px solid #000; }
-            #gps-display-print { display: block !important; border: 1px solid #000; }
-            #gps-status { display: none; }
+            .gps-box { background: white; border: 1px solid #000; padding: 10px; }
+            .gps-box label { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -82,14 +84,13 @@
         <div class="row"><label><span class="num">10.</span> תדר רדיו שנצרב:</label><input type="text"></div>
         <div class="row"><label><span class="num">11.</span> מס' עמוד חשמל / מרכזייה:</label><input type="text"></div>
 
-        <!-- חדש: תצורת XR -->
         <div class="option-group">
             <label><b>תצורת XR:</b></label>
             <div class="flex-row">
                 <label><input type="radio" name="xr_config" value="PIU"> PIU</label>
                 <label><input type="radio" name="xr_config" value="ממסר"> ממסר</label>
                 <div style="margin-right: 15px; flex-grow: 1;">
-                    <input type="text" placeholder="הזן מספר" style="padding: 8px;">
+                    <input type="text" placeholder="הזן מספר">
                 </div>
             </div>
         </div>
@@ -108,21 +109,31 @@
             </div>
         </div>
 
+        <!-- GPS Box with Manual Input -->
         <div class="gps-box">
-            <button type="button" class="btn btn-gps" onclick="handleGPS()">📍 דגום מיקום GPS נוכחי</button>
-            <div id="gps-status" style="font-size:0.9rem; font-weight:bold; color: #666;">טרם נדגם מיקום</div>
-            <div id="gps-display-print">מיקום (Lat, Lng): טרם נדגם</div>
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-gps" onclick="handleGPS()">📍 דגום מיקום GPS אוטומטי</button>
+                <div id="gps-status" style="font-size:0.8rem; margin-bottom:10px; color:#666;">ניתן להזין מיקום גם ידנית:</div>
+            </div>
+            <div class="gps-inputs">
+                <div style="flex:1">
+                    <label style="font-size:0.75rem; display:block;">קו רוחב (Lat)</label>
+                    <input type="text" id="lat_val" placeholder="32.123456">
+                </div>
+                <div style="flex:1">
+                    <label style="font-size:0.75rem; display:block;">קו אורך (Lng)</label>
+                    <input type="text" id="lng_val" placeholder="34.123456">
+                </div>
+            </div>
         </div>
 
         <div class="checklist">
             <label style="font-weight:bold; color:var(--primary); text-decoration:underline;">צ'ק ליסט סיום התקנה:</label>
             <div class="checklist-item"><input type="checkbox"> <span>נרשמו פרטים על המדבקה (שם, תאריך, תדר)</span></div>
-            
             <div class="row" style="padding: 10px 0; margin-right: 32px;">
                 <label>איכות תקשורת (RSSI / CSQ):</label>
                 <input type="text" placeholder="הזן עוצמת קליטה">
             </div>
-
             <div class="checklist-item"><input type="checkbox"> <span>נבדקו יציאות בקר (סולנואידים, מגענים)</span></div>
             <div class="checklist-item"><input type="checkbox"> <span>נבדקו כניסות בקר (מונה, ריליי)</span></div>
             <div class="checklist-item"><input type="checkbox"> <span>בוצעה אינטגרציה מלאה + בדיקה מרחוק</span></div>
@@ -155,24 +166,27 @@
 
     function handleGPS() {
         const status = document.getElementById('gps-status');
-        const printDisplay = document.getElementById('gps-display-print');
+        const latInput = document.getElementById('lat_val');
+        const lngInput = document.getElementById('lng_val');
+
         status.innerText = "מאתר מיקום...";
+        
         if (!navigator.geolocation) {
             status.innerText = "הדפדפן לא תומך ב-GPS";
             return;
         }
+
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const lat = pos.coords.latitude.toFixed(6);
                 const lng = pos.coords.longitude.toFixed(6);
-                const result = `${lat}, ${lng}`;
-                status.innerText = "נמצא מיקום: " + result;
+                latInput.value = lat;
+                lngInput.value = lng;
+                status.innerText = "המיקום עודכן אוטומטית:";
                 status.style.color = "#27ae60";
-                printDisplay.innerText = "מיקום (Lat, Lng): " + result;
-                printDisplay.style.display = "block";
             },
             (err) => {
-                status.innerText = "שגיאה בקליטת GPS";
+                status.innerText = "שגיאה ב-GPS. הזן מיקום ידנית.";
                 status.style.color = "red";
             },
             { enableHighAccuracy: true, timeout: 8000 }
